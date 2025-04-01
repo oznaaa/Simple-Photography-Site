@@ -17,19 +17,21 @@ With this site you can add your own photos and also create your own profile.
    ```bash
    git clone https://github.com/your_username/your_project.git
    cd your_project
+   ```
 
 2. **Install the Dependencies**
   Use the following command to install all the necessary packages listed in the requirements.txt file:
   ```bash
   pip install -r requirements.txt
-
+   ```
 
 3. **Run the Flask Application**
   Start the Flask development server with:
   ```bash
   flask run
+   ```
   By default, the application will be available at http://127.0.0.1:5000.
-
+   
 
 ## Dependencies
 
