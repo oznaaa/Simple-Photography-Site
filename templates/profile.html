@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <title>Profile {{ user.username }}     {% if not user %} not found {% else %} {% endif %}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">Name</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">İndex</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        {% if session.get('user_id') %}
+        <li><a href="/profile"><span class="glyphicon glyphicon-user"></span> {{ session['user_email'] }}</a></li>
+        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+        {% else %}
+        <li><a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="container">
+    <h2>Profile</h2>
+    
+    {% if not user %}
+      <p>This Profile Has Not Been Created Yet      </p>
+    {% else %}
+      <div class="profile-photo">
+        {% if user.profile_photo %}
+          <img src="{{ url_for('static', filename='uploads/' + user.profile_photo) }}" alt="Profile Photo" width="150">
+        {% else %}
+          <img src="{{ url_for('static', filename='uploads/default.jpg') }}" alt="Profile Photo" width="150">
+        {% endif %}
+      </div>
+      
+      <p><strong>Name:</strong> {{ user.nickname }}</p>
+      <p><strong>Nickname:</strong> {{ user.username }}</p>
+      <p><strong>Description:</strong> {{ user.bio if user.bio else "Not Available" }}</p>
+      <p><strong>Follewrs:</strong> {{ followers_count }}</p>
+      <p><strong>Number:</strong> {{ user.id }}</p>
+      
+      {% if session.get('user_id') == user.id %}
+        <button class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
+      {% endif %}
+    {% endif %}
+    
+  </div>
+  
+
+
+  <div id="editProfileModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Edit Profile</h4>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="/update_profile" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="nickname">Nickname:</label>
+              <input type="text" class="form-control" id="nickname" name="nickname" value="{{ user.nickname }}" required>
+            </div>
+            <div class="form-group">
+              <label for="bio">Description:</label>
+              <textarea class="form-control" id="bio" name="bio" rows="4">{{ user.bio }}</textarea>
+            </div>
+            <div class="form-group">
+              <label for="profile_photo">Profile Photo:</label>
+              <input type="file" id="profile_photo" name="profile_photo" accept="image/*">
+              {% if user.profile_photo %}
+              <p>Available Photo: <img src="{{ url_for('static', filename='uploads/' + user.profile_photo) }}" width="100"></p>
+              {% endif %}
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>

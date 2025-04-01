@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <title>Name - Main Page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    .btn-submit {
+      margin-top: 30px;
+    }
+    .photo-box {
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      padding: 15px;
+      text-align: center;
+      width: 400px;
+      margin: 0 auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .photo-box img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    h2 {
+      margin-bottom: 30px;
+    }
+    .user-link {
+      text-decoration: none;
+      font-weight: bold;
+      color: #337ab7;
+    }
+    .user-link:hover {
+      text-decoration: underline;
+      color: #23527c;
+    }
+    .progress {
+      margin-top: 15px;
+    }
+  </style>
+  <script>
+    $(document).ready(function () {
+      $("form").on("submit", function (event) {
+        var progressBar = $("#uploadProgress .progress-bar");
+        progressBar.css("width", "0%").text("0%");
+
+        var interval = setInterval(function () {
+          var currentWidth = parseInt(progressBar.css("width"));
+          if (currentWidth < 100) {
+            currentWidth += 10;
+            progressBar.css("width", currentWidth + "%").text(currentWidth + "%");
+          } else {
+            clearInterval(interval);
+          }
+        }, 200);
+      });
+    });
+  </script>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">Name</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="/">İndex</a></li>
+    </ul>   
+    <ul class="nav navbar-nav navbar-right">
+      {% if session.get('user_id') %}
+      <li><a href="/profile"><span class="glyphicon glyphicon-user"></span> {{ session['user_email'] }}</a></li>
+      <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+      {% else %}
+      <li><a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+      <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+{% if session.get('user_id') %}
+<div class="container">
+  <h2>Update Photo</h2>
+  <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" required><br><br>
+    <textarea name="description" placeholder="Fotoğraf Açıklaması" class="form-control" rows="3"></textarea><br>
+    <button type="submit" class="btn btn-primary btn-submit">Fotoğraf Yükle</button>
+
+    <!-- ProgressBar -->
+    <div id="uploadProgress" class="progress">
+      <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%">0%</div>
+    </div>
+  </form>
+</div>
+{% endif %}
+
+<!-- Fotoğraf Galerisi -->
+<div class="container">
+  <h2>Photos</h2>
+  {% for image in images %}
+  <div class="photo-box">
+    <!-- Fotoğraf -->
+    <img src="{{ url_for('static', filename='uploads/' + image['filename']) }}" alt="Fotoğraf">
+
+    <!-- Açıklama -->
+    <p>{{ image['description'] or 'Açıklama yok' }}</p>
+    
+    <!-- Kullanıcı İsmi (Profil Linki) -->
+    <p>
+      <a href="{{ url_for('profile', user_id=image['user_id']) }}" class="user-link">
+        {{ image['nickname'] }}
+      </a>
+    </p>
+
+    <!-- Takip Et Butonu -->
+    {% if current_user_id and current_user_id != image['user_id'] %}
+    <form action="{{ url_for('follow_user', followed_id=image['user_id']) }}" method="POST">
+      <button type="submit" class="btn btn-info">
+        Follow
+      </button>
+    </form>
+    {% endif %}
+
+    <!-- Beğenme Butonu -->
+    <form action="{{ url_for('like_image', image_id=image['id']) }}" method="POST" style="margin-top: 10px;">
+      <button type="submit" class="btn btn-success" 
+              {% if image['id'] in liked_images %}disabled{% endif %}>
+        Like ({{ image['likes'] }})
+      </button>
+    </form>
+
+    <!-- Silme Butonu -->
+    {% if current_user_id == image['user_id'] %}
+    <form action="{{ url_for('delete_file', filename=image['filename']) }}" method="GET" style="margin-top: 10px;">
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+</body>
+</html>
