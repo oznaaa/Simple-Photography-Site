@@ -23,6 +23,7 @@ With this site you can add your own photos and also create your own profile.
   ```bash
   pip install -r requirements.txt
 
+
 3. **Run the Flask Application**
   Start the Flask development server with:
   ```bash
@@ -41,3 +42,7 @@ The project uses the following Python libraries:
 - Flask-SQLAlchemy: Database ORM.
 
 - sqlite3: Lightweight database.
+
+## License
+
+This project is licensed under the MIT License.
