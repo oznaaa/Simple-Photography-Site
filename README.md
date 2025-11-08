@@ -16,7 +16,7 @@ With this site you can add your own photos and also create your own profile.
 
    ```bash
    git clone https://github.com/oznaaa/Simple-Photography-Site/.git
-   cd your_project
+   cd Simple-Photography-Site
    ```
 
 2. **Install the Dependencies**
