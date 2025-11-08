@@ -15,7 +15,7 @@ With this site you can add your own photos and also create your own profile.
    Open your terminal or command prompt and run the following command:
 
    ```bash
-   git clone https://github.com/your_username/your_project.git
+   git clone https://github.com/oznaaa/Simple-Photography-Site/.git
    cd your_project
    ```
 
